@@ -4,10 +4,11 @@
  request({
    baseURL: 'xxx', // 可选，默认项在 '@/src/config' 文件中，不同环境值也会不同
    url: 'xxx', // 请求路径，必选
-   method: 'xxx', // 请求方法，可选，默认 'GET'。我们这里基本上都是 'GET' 或者 'POST'。为 GET 时，需要传入 params ，为 POST 时，需要传入 data。
+   method: 'xxx', // 请求方法，可选, 大小写均可，默认 'GET'。我们这里基本上都是 'GET' 或者 'POST'。为 GET 时，需要传入 params ，为 POST 时，需要传入 data。
+   headers: {}, // 请求头, 可选. 请求方法为 post put patch 时, 会默认设置 Content-Type 为 application/x-www-form-urlencoded
    params: {}, // 请求地址后面会跟上的参数，可选。对应 GET 方法。
    data: {}, // 请求体中的参数，可选。对应 POST 方法。
-   // 其他参数请看 axios 文档。
+   // 其他参数请看 axios 文档: https://github.com/axios/axios
  })
  * @Date: 2019-08-08 14:52:07
  * @LastEditTime: 2019-08-08 19:06:44
@@ -40,46 +41,29 @@ const chooseKey = (sourceId) => {
  * 样例： { a: 1, b: 'str' } -> { a: 1, b: 'str', sourceId: 1, signed: 'xxx'}
  * @param {Object} obj 
  */
-const regenerateParamsOrData = (obj) => {
+const signParamsOrData = (obj) => {
+  // 下面两行这样写，主要是为了可以在 obj 中不加 sourceId 这个参数，选用默认值
   const { sourceId = 1 } = obj
-  const newObj = { ...params, sourceId }
+  const newObj = { ...obj, sourceId }
 
   const key = chooseKey(sourceId)
   const signed = md5Encryption(newObj, key)
 
-  return { ...obj, signed }
+  return { ...newObj, signed }
 }
 
 /**
- * 对传入的参数进行签名。
- * 可针对 GET 和 POST 方法，做相应处理。
- * @param {Object} param 传给 axois 的参数
+ * 将一个普通对象序列化
+ * @param {Object} obj 普通的对象, 就是只有一层的键值对, 并且 值 仅为基本类型, 如果后面 值 可能为数组或者其他, 需要修改哟
  */
-const signConfig = ({
-  method = 'GET',
-  params = {},
-  data = {},
-  ...restConfig
-} = {}) => {
-  method = method.toUpperCase()
+const objToQueryStr = (obj) => {
+  const keys = Object.keys(obj)
+  const queryStr = keys.reduce((queryStr, key) => {
+    return `${queryStr}${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}&`
+  }, '')
 
-  let newParams = {}
-  let newData = {}
-
-  if (method === 'GET') {
-    newParams = regenerateParamsOrData(params)
-  }
-
-  if (method === 'POST') {
-    newData = regenerateParamsOrData(data)
-  }
-
-  return {
-    ...restConfig,
-    method,
-    params: newParams,
-    data: newData,
-  }
+  // 注意这里需要将最后一个 & 符号去掉(虽然不去掉也无伤大雅)
+  return queryStr.slice(0, queryStr.length - 1)
 }
 
 // 这里本应该使用 request 来命名，但是在拦截器中会使用到 request 属性，以免混淆，直接使用了 instance。其他地方引入时可命名为 request
@@ -87,11 +71,42 @@ const instance = axios.create({
   baseURL,
 })
 
-// Add a request interceptor
+// axios 似乎直接使用 defaults 来设置有点 bug (详情可以直接搜 issues)
+// 这三个请求方法会设置默认 header 中的 Content-Type
+const encodedMethods = ['post', 'patch', 'put']
+
+// 关于拦截器可以看 axios 文档
 instance.interceptors.request.use(config => {
-  // Do something before request is sent
-  const signedConfig = signConfig(config)
-  return signedConfig
+  // 注意, 到这里 axios 会自动将 method 转为小写
+  let {
+    method,
+    headers: newHeaders = {},
+    params: newParams = {},
+    data: newData = {},
+    ...restConfig
+  } = config
+
+  if (method === 'get') {
+    newParams = signParamsOrData(newParams)
+  }
+  if (encodedMethods.includes(method)) {
+    newHeaders = {
+      // 注意这个顺序不能变, 这样可以设置默认 header['Content-Type'], 并且传入的自定义 'Content-Type' 优先级更高
+      'Content-Type': 'application/x-www-form-urlencoded',
+      ...newHeaders,
+    }
+    newData = signParamsOrData(newData)
+    // 这里我们需要手动将 data 序列化, 因为 axios 并不会帮我们做这件事; 至于处理方式文档中有介绍到两种, 不过我们这里比较简单, 所以就自己手动处理啦 
+    newData = objToQueryStr(newData)
+  }
+  
+  return {
+    ...restConfig,
+    method,
+    headers: newHeaders,
+    params: newParams,
+    data: newData,
+  }
 }, error => {
   // Do something with request error
   return Promise.reject(error)
