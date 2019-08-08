@@ -5,8 +5,8 @@ import { router } from 'dva'
 const { Header } = Layout
 const { Link } = router
 
-const renderGroupItem = (menusFirstLevel) => {
-  return menusFirstLevel.map(({ name, path }, index) => {
+const renderGroupItem = (projects) => {
+  return projects.map(({ name, path }, index) => {
     return (
       <Menu.Item key={index}>
         <Link to={path}>{name}</Link>
@@ -16,10 +16,10 @@ const renderGroupItem = (menusFirstLevel) => {
 }
 
 const renderGroup = (menus) => {
-  return menus.map(({ name, menusFirstLevel }, index) => {
+  return menus.map(({ name, projects }, index) => {
     return (
       <Menu.SubMenu key={index} title={name}>
-        {renderGroupItem(menusFirstLevel)}
+        {renderGroupItem(projects)}
       </Menu.SubMenu>
     )
   })
@@ -29,7 +29,6 @@ const TopHeader = ({ className, menus }) => {
   return (
     <Header className={`${className}`}>
       <Menu
-        theme="dark"
         mode="horizontal"
       >
         {renderGroup(menus)}
