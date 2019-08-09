@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  padding-left: 220px;
+}
+
+.product {
+  position: relative;
+  padding: 0 20px;
+  cursor: pointer;
+  &:hover {
+    .list {
+      transform: translateY(0);
+    }
+  }
+}
+
+.list {
+  display: flex;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  cursor: default;
+  transform: translateY(-1000px);
+}
+.list-group {
+  width: 120px;
+}
+.list-title {
+  font-size: 20px;
+}

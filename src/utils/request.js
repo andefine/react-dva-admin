@@ -1,5 +1,5 @@
 /*
- * @Description: 请求方法。
+ * @Description: 请求方法。暂时先使用 axios , 至于 fetch 再考虑 
  使用方式：
  request({
    baseURL: 'xxx', // 可选，默认项在 '@/src/config' 文件中，不同环境值也会不同
@@ -11,7 +11,7 @@
    // 其他参数请看 axios 文档: https://github.com/axios/axios
  })
  * @Date: 2019-08-08 14:52:07
- * @LastEditTime: 2019-08-08 19:06:44
+ * @LastEditTime: 2019-08-09 10:41:07
  */
 import axios from 'axios'
 import { baseURL, key1, key2 } from '@/config'
@@ -69,10 +69,11 @@ const objToQueryStr = (obj) => {
 // 这里本应该使用 request 来命名，但是在拦截器中会使用到 request 属性，以免混淆，直接使用了 instance。其他地方引入时可命名为 request
 const instance = axios.create({
   baseURL,
+  // withCredentials: true, // 这里设置携带 cookie 会有跨域问题，后面再说
+  timeout: 10000,
 })
 
-// axios 似乎直接使用 defaults 来设置有点 bug (详情可以直接搜 issues)
-// 这三个请求方法会设置默认 header 中的 Content-Type
+// 这三个请求方法会将 data 序列化
 const encodedMethods = ['post', 'patch', 'put']
 
 // 关于拦截器可以看 axios 文档
@@ -92,11 +93,11 @@ instance.interceptors.request.use(config => {
   if (encodedMethods.includes(method)) {
     newHeaders = {
       // 注意这个顺序不能变, 这样可以设置默认 header['Content-Type'], 并且传入的自定义 'Content-Type' 优先级更高
-      'Content-Type': 'application/x-www-form-urlencoded',
+      // 'Content-Type': 'application/x-www-form-urlencoded',
       ...newHeaders,
     }
     newData = signParamsOrData(newData)
-    // 这里我们需要手动将 data 序列化, 因为 axios 并不会帮我们做这件事; 至于处理方式文档中有介绍到两种, 不过我们这里比较简单, 所以就自己手动处理啦 
+    // 这里我们需要手动将 data 序列化, 因为 axios 并不会帮我们做这件事, 它只会给 JSON.stringfy。至于处理方式文档中有介绍到两种, 不过我们这里比较简单, 所以就自己手动处理啦 
     newData = objToQueryStr(newData)
   }
   

@@ -35,7 +35,7 @@ const renderProjectRoutes = (app, menus) => {
 const MainLayout = ({ app, menus }) => {
   return (
     <Layout className={styles['root']}>
-      <TopHeader className={styles['header']} menus={menus}></TopHeader>
+      <TopHeader menus={menus}></TopHeader>
       {renderProjectRoutes(app, menus)}
     </Layout>
   )
