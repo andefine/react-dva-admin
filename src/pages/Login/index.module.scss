@@ -1,7 +1,10 @@
-.login {
+.root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100%;
 }
 
-.login-span {
-  font-size: 40px;
+.submit-btn {
+  width: 100%;
 }

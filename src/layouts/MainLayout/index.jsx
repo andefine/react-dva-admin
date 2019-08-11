@@ -14,11 +14,13 @@ const renderProjectRoutes = (app, menus) => {
       {
         menus.reduce(
           (resArr, { projects }, titleIndex) => {
-            projects.forEach(({ path, component }, proIndex) => {
+            projects.forEach(({ path, models, component }, proIndex) => {
               const key = `${titleIndex}-${proIndex}`
+              console.log(models)
               resArr.push(
                 <Route key={key} path={path} component={dynamic({
                   app,
+                  models,
                   component,
                 })}></Route>
               )
