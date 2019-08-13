@@ -1,5 +1,6 @@
 import dva from 'dva'
 import { createBrowserHistory } from 'history'
+import { createLogger } from 'redux-logger'
 
 import './styles/index.css'
 
@@ -9,6 +10,12 @@ import './styles/index.css'
 const app = dva({
   history: createBrowserHistory(),
 })
+
+if (process.env.NODE_ENV === 'development') {
+  app.use({
+    onAction: createLogger(),
+  })
+}
 
 app.model(require('./models/app').default)
 

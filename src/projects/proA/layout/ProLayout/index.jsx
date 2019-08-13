@@ -1,4 +1,5 @@
 import React from 'react'
+import { router } from 'dva'
 import { Layout } from 'antd'
 
 import SiderMenu from '@/components/SiderMenu'
@@ -6,6 +7,7 @@ import SiderMenu from '@/components/SiderMenu'
 import Page1 from 'proA/pages/Page1'
 import Page2 from 'proA/pages/Page2'
 
+const { Switch, Route, Redirect } = router
 const { Content } = Layout
 
 const siderMenus = [
@@ -21,11 +23,28 @@ const siderMenus = [
   },
 ]
 
-const ProLayout = () => {
+const renderRoutes = (match) => {
+  const { path: projPath } = match
+  
+  return (
+    <Switch>
+      <Redirect exact from="/proA" to={`${projPath}${siderMenus[0].path}`}></Redirect>
+      {siderMenus.map(({ path, component }, index) => {
+        return (
+          <Route key={index} path={`${projPath}${path}`} component={component}></Route>
+        )
+      })}
+    </Switch>
+  )
+}
+
+const ProLayout = ({ match }) => {
   return (
     <Layout>
       <SiderMenu menus={siderMenus}></SiderMenu>
-      <Content></Content>
+      <Content>
+        {renderRoutes(match)}
+      </Content>
     </Layout>
   )
 }

@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'dva'
 
 const Test = () => {
   return (
@@ -7,4 +6,4 @@ const Test = () => {
   )
 }
 
-export default connect()(Test)
+export default Test

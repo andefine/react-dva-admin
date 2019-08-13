@@ -1,10 +1,13 @@
 import React from 'react'
-import { Form, Icon, Input, Button, Checkbox } from 'antd'
-import { connect } from 'dva'
+import { Form, Icon, Input, Button, message } from 'antd'
+import { connect, router } from 'dva'
 
 import styles from './index.module.scss'
 
+const { Redirect } = router
+
 class Login extends React.Component {
+  
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -13,7 +16,6 @@ class Login extends React.Component {
 
         const { dispatch } = this.props
         const { username, password } = values
-        console.log(dispatch)
         dispatch({ type: 'app/login', username, password })
       }
     });
@@ -21,6 +23,12 @@ class Login extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { hasLogged } = this.props
+
+    if (hasLogged) {
+      return <Redirect to="/proA"></Redirect>
+    }
+
     return (
       <div className={styles['root']}>
         <Form onSubmit={this.handleSubmit}>
@@ -46,10 +54,6 @@ class Login extends React.Component {
             )}
           </Form.Item>
           <Form.Item>
-            {getFieldDecorator('remember', {
-              valuePropName: 'checked',
-              initialValue: true,
-            })(<Checkbox>Remember me</Checkbox>)}
             <Button type="primary" htmlType="submit" className={styles['submit-btn']}>
               Log in
             </Button>
@@ -60,9 +64,9 @@ class Login extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { user } = state.app
-  return { user }
+const mapStateToProps = ({ app }) => {
+  const { user, errMsg, hasLogged } = app
+  return { user, errMsg, hasLogged }
 }
 
 export default connect(
