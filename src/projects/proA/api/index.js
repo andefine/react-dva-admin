@@ -2,7 +2,8 @@ import request from '@/utils/request'
 
 export const getData = () => request({
   url: '/sightseeing/sightseeingList',
-  params: {
+  method: 'post',
+  data: {
     sourceId: 2,
     scenicId: 1,
     page: 1,

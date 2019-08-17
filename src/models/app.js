@@ -1,6 +1,6 @@
 import * as userManageApi from '@/api/userManage'
 
-const localStoreAccount = (username, password) => {
+const setAccountToLocalStorage = (username, password) => {
   localStorage.setItem('account', JSON.stringify({ username, password }))
 }
 
@@ -9,9 +9,10 @@ export default {
   namespace: 'app',
 
   state: {
-    hasLogged: false,
     // 是否正在登录
     isLogining: false,
+    // 是否已登录
+    hasLogged: false,
     user: {},
     errMsg: '',
   },
@@ -27,7 +28,7 @@ export default {
         return
       }
       
-      localStoreAccount(userName, password)
+      setAccountToLocalStorage(userName, password)
       yield put({ type: 'loginSuccessed', user })
     },
   },
@@ -60,7 +61,14 @@ export default {
   },
 
   subscriptions: {
-    
+    setup({ dispatch }) {
+      const account = localStorage.getItem('account')
+      if (account !== null) {
+        console.log('app setup')
+        const { username, password } = JSON.parse(account)
+        dispatch({ type: 'login', username, password })
+      }
+    }
   },
 
 }

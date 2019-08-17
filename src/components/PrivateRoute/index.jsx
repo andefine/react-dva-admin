@@ -2,42 +2,28 @@ import React from 'react'
 import { router, connect } from 'dva'
 import { Spin } from 'antd'
 
+import styles from './index.module.scss'
+
 const { Route, Redirect } = router
 
 const PrivateRoute = ({
-  dispatch,
   hasLogged,
   isLogining,
   component: Component,
   ...rest
 }) => {
   if (isLogining) {
-    console.log('isLogining')
     return (
-      <div className="">
-        <Spin></Spin>
+      <div className={styles['logining']}>
+        <Spin tip="登录中..."></Spin>
       </div>
     )
-  }
-  
-  let isAuthed = false
-  if (!hasLogged) {
-    const account = JSON.parse(localStorage.getItem('account'))
-    
-    if (account) {
-      const { username, password } = account
-      dispatch({ type: 'app/login', username, password })
-    }
-  }
-
-  if (hasLogged) {
-    isAuthed = true
   }
   
   return (
     <Route {...rest} render={(props) => {
       return (
-        isAuthed ? (
+        hasLogged ? (
           <Component {...props}></Component>
         ) : (
           <Redirect to="/Login"></Redirect>
@@ -48,9 +34,10 @@ const PrivateRoute = ({
 }
 
 const mapStateToProps = ({ app }) => {
+  const { isLogining, hasLogged } = app
   return {
-    hasLogged: app.hasLogged,
-    isLogining: app.isLogining,
+    isLogining,
+    hasLogged,
   }
 }
 
