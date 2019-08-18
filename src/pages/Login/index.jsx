@@ -21,10 +21,11 @@ class Login extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { isLogining, hasLogged } = this.props
+    const { isLogining, hasLogged, location } = this.props
+    const { from } = location.state || { from: { pathname: '/' } }
 
     if (hasLogged) {
-      return <Redirect to="/proA"></Redirect>
+      return <Redirect to={from}></Redirect>
     }
 
     return (

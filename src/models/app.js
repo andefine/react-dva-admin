@@ -31,6 +31,7 @@ export default {
       
       setAccountToLocalStorage(username, password)
       yield put({ type: 'loginSuccessed', user })
+      message.success(errMsg)
     },
   },
 
