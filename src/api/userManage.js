@@ -2,13 +2,13 @@ import request from '@/utils/request'
 
 /**
  * 登录
- * @param {string} userName 账号（必传）
+ * @param {string} username 账号（必传）
  * @param {string} password 密码（必传）
  */
-export const login = (userName, password) => request({
+export const login = (username, password) => request({
   url: '/userManage/login',
   method: 'post',
-  data: { userName, password },
+  data: { userName: username, password },
 })
 
 /**

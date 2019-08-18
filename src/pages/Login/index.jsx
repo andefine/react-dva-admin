@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Icon, Input, Button, message } from 'antd'
+import { Form, Icon, Input, Button } from 'antd'
 import { connect, router } from 'dva'
 
 import styles from './index.module.scss'
@@ -12,18 +12,16 @@ class Login extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
-
         const { dispatch } = this.props
         const { username, password } = values
         dispatch({ type: 'app/login', username, password })
       }
-    });
-  };
+    })
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { hasLogged } = this.props
+    const { isLogining, hasLogged } = this.props
 
     if (hasLogged) {
       return <Redirect to="/proA"></Redirect>
@@ -54,19 +52,24 @@ class Login extends React.Component {
             )}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" className={styles['submit-btn']}>
+            <Button
+              type="primary"
+              loading={isLogining}
+              htmlType="submit"
+              className={styles['submit-btn']}
+            >
               Log in
             </Button>
           </Form.Item>
         </Form>
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = ({ app }) => {
-  const { user, errMsg, hasLogged } = app
-  return { user, errMsg, hasLogged }
+  const { isLogining, hasLogged } = app
+  return { isLogining, hasLogged }
 }
 
 export default connect(

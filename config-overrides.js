@@ -5,8 +5,10 @@ const {
   addWebpackAlias,
   addLessLoader,
   addBundleVisualizer,
+  removeModuleScopePlugin,
 } = require('customize-cra')
 
+// `customize-cra` api 文档地址：https://github.com/arackaf/customize-cra/blob/HEAD/api.md
 module.exports = override(
   // 这个配置主要是为了在使用 antd 时可以按需引入
   // antd 文档有介绍，地址： https://ant.design/docs/react/use-with-create-react-app-cn#%E4%BD%BF%E7%94%A8-babel-plugin-import
@@ -20,6 +22,10 @@ module.exports = override(
   // 配置路径别名。'@' 就代表根目录下的 src。使用，如：'@/components/xxx'
   // 另外添加了 jsconfig.json 文件，其中也类似的设置了别名，这样在 vscode 编写代码时，输入路径时会有智能提示。但是这个有时候显示提示的延迟会很长，或者干脆提示不了 ＞﹏＜
   addWebpackAlias({
+    // 这里配置了这个 /config 这个别名，使用时才能这样写，否则会报错，这个目前只有在 src/utils/request 中使用到，就不再 jsconfig.json 中添加了。
+    ['/config']: path.resolve(__dirname, 'config'),
+    // /mock 同 /config
+    ['/mock']: path.resolve(__dirname, 'mock'),
     ['@']: path.resolve(__dirname, 'src'),
     ['proA']: path.resolve(__dirname, 'src/projects/proA')
   }),
@@ -85,4 +91,7 @@ module.exports = override(
     });
     return config;
   },
+
+  // 因为 CRA 内部 webpack 设置了在 src 下不能引入 src 之外的模块，所以我们所有的文件全部放在 src 目录下。而我们想要将 config 和 mock 文件夹放在 src 同一级话，就需要添加这个
+  removeModuleScopePlugin(),
 )

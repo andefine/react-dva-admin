@@ -14,7 +14,7 @@ request({
  * @LastEditTime: 2019-08-09 10:41:07
  */
 import axios from 'axios'
-import { baseURL, key1, key2 } from '@/config'
+import { baseURL, key1, key2 } from '/config'
 import md5Encryption from './md5Encryption'
 
 /**
@@ -74,7 +74,7 @@ const objToQueryStr = (obj) => {
 // 这里本应该使用 request 来命名，但是在拦截器中会使用到 request 属性，以免混淆，直接使用了 instance。其他地方引入时可命名为 request
 const instance = axios.create({
   baseURL,
-  withCredentials: true, // 这里设置携带 cookie 会有跨域问题，后面再说
+  // withCredentials: true, // 这里设置携带 cookie 会有跨域问题，后面再说
   timeout: 10000,
 })
 

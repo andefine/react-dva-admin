@@ -1,4 +1,5 @@
 import * as userManageApi from '@/api/userManage'
+import { message } from 'antd'
 
 const setAccountToLocalStorage = (username, password) => {
   localStorage.setItem('account', JSON.stringify({ username, password }))
@@ -14,21 +15,21 @@ export default {
     // 是否已登录
     hasLogged: false,
     user: {},
-    errMsg: '',
   },
 
   effects: {
-    * login({ username: userName, password }, { call, put }) {
+    * login({ username, password }, { call, put }) {
       yield put({ type: 'loginStart' })
-      const res = yield call(userManageApi.login, userName, password)
-      const { data: user, errorCode, message } = res
+      const res = yield call(userManageApi.login, username, password)
+      const { data: user, errorCode, message: errMsg } = res
 
       if (errorCode !== 200) {
-        yield put({ type: 'loginFailed', errMsg: message })
+        yield put({ type: 'loginFailed' })
+        message.error(errMsg)
         return
       }
       
-      setAccountToLocalStorage(userName, password)
+      setAccountToLocalStorage(username, password)
       yield put({ type: 'loginSuccessed', user })
     },
   },
@@ -47,15 +48,13 @@ export default {
         hasLogged: true,
         isLogining: false,
         user,
-        errMsg: '',
       }
     },
 
-    loginFailed(state, { errMsg }) {
+    loginFailed(state) {
       return {
         ...state,
         isLogining: false,
-        errMsg,
       }
     }
   },
