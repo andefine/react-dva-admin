@@ -1,5 +1,5 @@
-import page1Model from 'proA/models/page1'
-import page2Model from 'proA/models/page2'
+import page1Model from 'proA/pages/Page1/model'
+import page2Model from 'proA/pages/Page2/model'
 
 const router = {
   name: 'proA',

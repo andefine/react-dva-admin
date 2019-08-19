@@ -57,7 +57,16 @@ export default {
         ...state,
         isLogining: false,
       }
-    }
+    },
+
+    logout(state) {
+      localStorage.removeItem('account')
+      return {
+        ...state,
+        isLogining: false,
+        hasLogged: false,
+      }
+    },
   },
 
   subscriptions: {

@@ -19,6 +19,6 @@ if (process.env.NODE_ENV === 'development') {
 
 app.model(require('./models/app').default)
 
-app.router(require('@/router').default)
+app.router(require('./router').default)
 
 app.start('#root')
