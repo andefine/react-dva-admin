@@ -4,7 +4,7 @@ import { Layout } from 'antd'
 
 import SiderMenu from '@/components/SiderMenu'
 
-import Page1 from 'proA/pages/Page1'
+import Sightseeing from 'proA/pages/Sightseeing'
 import Page2 from 'proA/pages/Page2'
 
 const { Switch, Route, Redirect } = router
@@ -12,9 +12,9 @@ const { Content } = Layout
 
 const siderMenus = [
   {
-    name: 'page 1',
-    path: '/Page1',
-    component: Page1,
+    name: 'Sightseeing',
+    path: '/Sightseeing',
+    component: Sightseeing,
   },
   {
     name: 'page 2',
