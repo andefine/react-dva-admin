@@ -5,6 +5,7 @@ import { Layout } from 'antd'
 import SiderMenu from '@/components/SiderMenu'
 
 import Sightseeing from 'proA/pages/Sightseeing'
+import SightseeingDetail from 'proA/pages/SightseeingDetail'
 import Page2 from 'proA/pages/Page2'
 
 const { Switch, Route, Redirect } = router
@@ -29,6 +30,7 @@ const renderRoutes = (match) => {
   return (
     <Switch>
       <Redirect exact from="/proA" to={`${projPath}${siderMenus[0].path}`}></Redirect>
+      <Route path={`${projPath}/Sightseeing/:id`} component={SightseeingDetail}></Route>
       {siderMenus.map(({ path, component }, index) => {
         return (
           <Route key={index} path={`${projPath}${path}`} component={component}></Route>

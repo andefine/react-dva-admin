@@ -5,6 +5,10 @@ const setAccountToLocalStorage = (username, password) => {
   localStorage.setItem('account', JSON.stringify({ username, password }))
 }
 
+const timeout = (delay) => new Promise(resolve => {
+  setTimeout(resolve, delay)
+})
+
 export default {
  
   namespace: 'app',
@@ -18,7 +22,11 @@ export default {
   },
 
   effects: {
-    * login({ username, password }, { call, put }) {
+    *test(action, { call }) {
+      yield call(timeout, 2000)
+    },
+    
+    *login({ username, password }, { call, put }) {
       yield put({ type: 'loginStart' })
       const res = yield call(userManageApi.login, username, password)
       const { data: user, errorCode, message: errMsg } = res

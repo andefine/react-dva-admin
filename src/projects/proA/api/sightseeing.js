@@ -30,3 +30,30 @@ export const getManages = () => request({
   mehtod: 'get',
   params: { sourceId: 2 }
 })
+
+/**
+ * 新增观光车
+ * @param {*} param 
+ * @param {number} param.scenicId 景区id
+ * @param {string} param.carNumber 车牌号
+ * @param {string} param.typeName 车类型名
+ */
+export const createCar = ({
+  sourceId = 2,
+  scenicId = 1,
+  ...rest
+} = {}) => request({
+  url: '/sightseeing/saveSight',
+  method: 'post',
+  data: { sourceId, scenicId, ...rest }
+})
+
+/**
+ * 删除观光车
+ * @param {number} id 车的id
+ */
+export const deleteCar = (id) => request({
+  url: '/sightseeing/daleteSight',
+  method: 'post',
+  data: { sourceId: 2, id }
+})

@@ -1,203 +1,194 @@
 import React from 'react'
-import { connect, router } from 'dva'
-import { Table, Badge, Dropdown, Menu } from 'antd'
+import { connect } from 'dva'
+import { Button, Modal, Form, Input, Select, DatePicker } from 'antd'
+
+import SightseeingTable from './SightseeingTable'
 
 import styles from './index.module.scss'
 
-const { withRouter } = router
-
-class SightseeingModel extends React.Component {
+class Sightseeing extends React.Component {
+  state = {
+    isCreateModalShow: false,
+  }
+  
   componentDidMount() {
     const { dispatch } = this.props
 
-    dispatch({ type: 'proA/page1/loadSightseeingCars' })
+    dispatch({
+      type: 'proA/sightseeing/loadSightseeingCars',
+      // payload: { page: 2, pageSize: 10 }
+    })
+
+    // const res2 = dispatch({ type: 'app/test' })
+    // console.log(res2)
   }
 
-  handlePaginationChanged = (page, pageSize) => {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'proA/page1/loadSightseeingCars',
-      payload: { page, pageSize }
+  handleOk = () => {
+    const { form, dispatch } = this.props
+
+    form.validateFields((err, values) => {
+      console.log(values)
+      if (err) {
+        return
+      }
+
+      const {
+        sightseeingName,
+        typeName,
+        manageId,
+        inputTime,
+        maintenanceTime,
+        insuranceTime,
+        carNumber,
+      } = values
+
+      const payload = {
+        // sourceId: 2,
+        // scenicId: 1,
+        sightseeingName,
+        typeName,
+        manageId,
+        // newInputTime: inputTime,
+        // newMaintenanceTime: maintenanceTime,
+        // newInsuranceTime: insuranceTime,
+        carNumber,
+      }
+
+      if (inputTime) {
+        payload.newInputTime = inputTime.format('YYYY-MM-DD')
+      }
+      if (maintenanceTime) {
+        payload.newMaintenanceTime = inputTime.format('YYYY-MM-DD')
+      }
+      if (insuranceTime) {
+        payload.newInsuranceTime = inputTime.format('YYYY-MM-DD')
+      }
+
+      dispatch({
+        type: 'proA/sightseeing/createSightseeingCar',
+        payload,
+      })
+
+      this.setState({ isCreateModalShow: false })
     })
   }
-
-  handleRepair = () => {}
-
-  handleDelete = () => {}
   
   render() {
-    const { className = '', sightseeingCars, sightseeingCarsParam } = this.props
-    const { page, pageSize, total } = sightseeingCarsParam
+    const { className = '', form, manages } = this.props
+    const { getFieldDecorator } = form
 
-    const menu = (
-      <Menu className={ styles.sightseeingCar_menuStyle }>
-        <div id = { styles.sanjiao_top }></div>
-        <Menu.Item>
-          <span onClick = { this.handleRepair }> 报修 </span>
-        </Menu.Item>
-        <Menu.Divider></Menu.Divider>
-        <Menu.Item>
-          <span onClick = { this.handleDelete }> 删除 </span>
-        </Menu.Item>
-      </Menu>
-    );
-
-    const columns = [
-      {
-        title: '序号',
-        dataIndex: 'id',
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 6 }
       },
-      {
-        title: '观光车名称',
-        dataIndex: 'sightseeingName',
-      },
-      {
-        title: '车辆型号',
-        dataIndex: 'typeName',
-      },
-      {
-        title: '车牌号',
-        dataIndex: 'carNumber',
-      },
-      {
-        title: '车辆状态',
-        dataIndex: 'sightseeingStates',
-        render(sightseeingStates) {
-          let badgeProps = {}
-          switch (sightseeingStates) {
-            case 0:
-              badgeProps = {
-                status: 'success',
-                text: '正常',
-              }
-              break
-            case 1:
-              badgeProps = {
-                status: 'error',
-                text: '损坏',
-              }
-              break
-            default:
-              badgeProps = {
-                status: 'success',
-                text: '正常',
-              }
-              break
-          }
-          return <Badge {...badgeProps}></Badge>
-        },
-      },
-      {
-        title: '运营状态',
-        dataIndex: 'operatingState',
-      },
-      {
-        title: '司机名称',
-        dataIndex: 'driverName',
-        // render: (text, record) => (
-        //   <span>
-        //     {record.driverName == null ? '— — —' : record.driverName}
-        //   </span>
-        // ),
-        render: (driverName) => (
-          <span>
-            {driverName === null ? '— — —' : driverName}
-          </span>
-        ),
-      },
-      {
-        title: '线路名称',
-        dataIndex: 'routeName',
-        // render: (text, record) => (
-        //   <span>
-        //     {record.routeName == null ? '— — —' : record.routeName}
-        //   </span>
-        // ),
-      },
-      {
-        title: '管理人员',
-        dataIndex: 'manageId',
-        // render: (text, record) => {
-        //   let routeList = this.state.adminDataList.map(items => {
-        //     // console.log(items);
-        //     let manageIdText = []
-        //     if (record.manageId === items.id) {
-        //       manageIdText.push(items.realName);
-        //     }
-    
-        //     return (
-        //       <span key={items.id}>
-        //         <span>{manageIdText == null ? '— — —' : manageIdText}</span>
-        //       </span>
-        //     )
-    
-        //   })
-        //   return routeList;
-        // },
-        render: (manageId) => {
-          const { managesById } = this.props
-          return <span>{managesById[manageId] && managesById[manageId].realName}</span>
-        },
-      },
-      {
-        title: '操作',
-        dataIndex: 'operation',
-        // render: (text, record) => (
-        //   <span className={ styles.driverManagement_operation }>
-        //     <a onClick={() => this.detailsLink(record)}> 详情 </a>
-        //     <span className={ styles.driver_empty }></span>
-        //     {/* <Dropdown overlay={<MenuMultiplexing/>} trigger={['click']}> */}
-        //     <Dropdown overlay={menu} trigger={['click']}>
-        //       <a className="ant-dropdown-link" > 更多 </a>
-        //     </Dropdown>
-        //   </span>
-        // ),
-        render: (text, record) => (
-          <div>
-            <span style={{ cursor: 'pointer', color: 'blue' }}>详情</span>
-            &nbsp;
-            <span className={ styles.driver_empty }></span>
-            <Dropdown overlay={menu} trigger={['click']}>
-              <span style={{ cursor: 'pointer', color: 'blue' }}>更多</span>
-            </Dropdown>
-          </div>
-        )
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 }
       }
-    ]
+    }
 
     return (
       <div className={`${className} ${styles['root']}`}>
-        <Table
-          rowKey={item => item.id}
-          columns={columns}
-          dataSource={sightseeingCars}
-          pagination={{
-            current: page || 1,
-            total: total || 0,
-            pageSize: pageSize || 1,
-            showTotal: total => `共 ${total} 条`,
-            onChange: this.handlePaginationChanged,
-            showSizeChanger: true,
-            pageSizeOptions: ['3', '10', '20', '30', '40'],
-            onShowSizeChange: this.handlePaginationChanged,
-          }}
-        ></Table>
+        <Button
+          type="primary"
+          onClick={() => { this.setState({ isCreateModalShow: true }) }}
+        >新 增</Button>
+
+        <Modal
+          visible={this.state.isCreateModalShow}
+          title="新增观光车"
+          okText="保存"
+          cancelText="取消"
+          onOk={this.handleOk}
+          onCancel={() => { this.setState({ isCreateModalShow: false }) }}
+        >
+          <Form>
+            <Form.Item
+              label="观光车名称:"
+              required
+              hasFeedback
+              {...formItemLayout}
+            >
+              {getFieldDecorator("sightseeingName", {
+                rules: [
+                  {
+                    required: true,
+                    message: "请输入观光车名称!",
+                    whitespace: true
+                  }
+                ],
+                initialValue: ""
+              })(<Input placeholder="请输入观光车名称" />)}
+            </Form.Item>
+            <Form.Item label="车辆型号:" required hasFeedback {...formItemLayout}>
+              {getFieldDecorator("typeName", {
+                rules: [
+                  { required: true, message: "请输入车辆型号!", whitespace: true }
+                ],
+                initialValue: ""
+              })(<Input placeholder="请输入车辆型号!" />)}
+            </Form.Item>
+            <Form.Item label="管理人员:" required hasFeedback {...formItemLayout}>
+              {getFieldDecorator("manageId", {
+                rules: [{ required: true, message: "请输入管理人员的姓名!" }]
+              })(
+                <Select placeholder="请输入管理人员的姓名!">
+                  {manages.map(items => (
+                    <Select.Option key={items.id} value={items.id}>
+                      {items.realName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+            <Form.Item
+              label="投入使用时间:"
+              required
+              hasFeedback
+              {...formItemLayout}
+            >
+              {getFieldDecorator("inputTime", {
+                rules: [{ required: true, message: "请输入投入使用时间!" }],
+                initialValue: null
+              })(
+                <DatePicker
+                  format="YYYY-MM-DD"
+                  placeholder="请输入投入使用时间"
+                />
+              )}
+            </Form.Item>
+            <Form.Item label="检修时间:" hasFeedback {...formItemLayout}>
+              {getFieldDecorator("maintenanceTime", {
+                initialValue: null
+              })(<DatePicker format="YYYY-MM-DD" placeholder="请输入检修时间" />)}
+            </Form.Item>
+            <Form.Item label="保险时间:" hasFeedback {...formItemLayout}>
+              {getFieldDecorator("insuranceTime", {
+                initialValue: null
+              })(<DatePicker format="YYYY-MM-DD" placeholder="请输入保险时间" />)}
+            </Form.Item>
+
+            <Form.Item label="车牌号:" hasFeedback {...formItemLayout}>
+              {getFieldDecorator("carNumber", {
+                rules: [{ message: "请填写车牌号!", whitespace: true }],
+                initialValue: ""
+              })(<Input placeholder="请填写车牌号!" />)}
+            </Form.Item>
+          </Form>
+        </Modal>
+        
+        <SightseeingTable></SightseeingTable>
       </div>
     )
   }
 }
 
-const mapStateToProps = ({ 'proA/page1': page1 }) => {
-  const { sightseeingCars, sightseeingCarsParam, manages } = page1
-
-  const managesById = manages.reduce((acc, item) => {
-    const { id } = item
-    acc[id] = item
-    return acc
-  }, {})
-  
-  return { sightseeingCars, sightseeingCarsParam, managesById }
+const mapStateToProps = (state) => {
+  const { 'proA/sightseeing': { manages } } = state
+  return { manages }
 }
 
-// export default connect(mapStateToProps)(SightseeingModel)
-export default withRouter(connect(mapStateToProps)(SightseeingModel))
+export default connect(
+  mapStateToProps
+)(Form.create()(Sightseeing))
