@@ -1,6 +1,8 @@
 import dva from 'dva'
 import { createBrowserHistory } from 'history'
-import { createLogger } from 'redux-logger'
+
+import appModel from '@/models/app'
+import RouterConfig from '@/RouterConfig'
 
 import './styles/index.css'
 
@@ -13,12 +15,13 @@ const app = dva({
 
 if (process.env.NODE_ENV === 'development') {
   app.use({
-    onAction: createLogger(),
+    // 开发环境下会使用到 redux-logger 插件，如果不想用，将下面一行注释掉即可
+    // onAction: require('redux-logger').createLogger(),
   })
 }
 
-app.model(require('./models/app').default)
+app.model(appModel)
 
-app.router(require('./router').default)
+app.router(RouterConfig)
 
 app.start('#root')

@@ -3,7 +3,7 @@ import request from '@/utils/request'
 /**
  * 获取观光车列表
  * @param {{ scenicId: number, page: number, pageSize: number }} param 
- * @param param.scenicId 啥啥啥 id 
+ * @param param.scenicId 景区 id。默认 1
  * @param param.page 第几页，从 1 开始。默认 1
  * @param param.pageSize 每一页多少条。默认 10
  */

@@ -3,7 +3,7 @@ import { router } from 'dva'
 
 import Login from '@/pages/Login'
 import Test from '@/pages/Test'
-import MainLayout from '@/layouts/MainLayout'
+import MainLayout from '@/layout/MainLayout'
 import proA from 'proA/router'
 
 const { Router, Switch, Route } = router
@@ -29,7 +29,7 @@ const menus = [
   },
 ]
 
-function RouterConfig({ history, app }) {
+const RouterConfig = ({ history, app }) => {
   return (
     <Router history={history}>
       <Switch>

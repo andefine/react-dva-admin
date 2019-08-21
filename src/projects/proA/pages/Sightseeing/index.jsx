@@ -15,7 +15,7 @@ class Sightseeing extends React.Component {
     const { dispatch } = this.props
 
     dispatch({
-      type: 'proA/sightseeing/loadSightseeingCars',
+      type: 'proA_sightseeing/loadSightseeingCars',
       // payload: { page: 2, pageSize: 10 }
     })
 
@@ -65,7 +65,7 @@ class Sightseeing extends React.Component {
       }
 
       dispatch({
-        type: 'proA/sightseeing/createSightseeingCar',
+        type: 'proA_sightseeing/createSightseeingCar',
         payload,
       })
 
@@ -185,7 +185,7 @@ class Sightseeing extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { 'proA/sightseeing': { manages } } = state
+  const { proA_sightseeing: { manages } } = state
   return { manages }
 }
 

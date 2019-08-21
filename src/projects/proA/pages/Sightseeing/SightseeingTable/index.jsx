@@ -10,7 +10,7 @@ class SightseeingTable extends React.Component {
   handlePaginationChanged = (page, pageSize) => {
     const { dispatch } = this.props
     dispatch({
-      type: 'proA/sightseeing/loadSightseeingCars',
+      type: 'proA_sightseeing/loadSightseeingCars',
       payload: { page, pageSize }
     })
   }
@@ -26,7 +26,7 @@ class SightseeingTable extends React.Component {
         break
       case 'delete':
         dispatch({
-          type: 'proA/sightseeing/deleteSightseeingCar',
+          type: 'proA_sightseeing/deleteSightseeingCar',
           payload: id,
         })
         break
@@ -213,7 +213,7 @@ class SightseeingTable extends React.Component {
   }
 }
 
-const mapStateToProps = ({ 'proA/sightseeing': page1 }) => {
+const mapStateToProps = ({ proA_sightseeing: page1 }) => {
   const { sightseeingCars, sightseeingCarsParam, manages } = page1
 
   const managesById = manages.reduce((acc, item) => {

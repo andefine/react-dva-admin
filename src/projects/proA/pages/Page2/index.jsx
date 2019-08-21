@@ -1,13 +1,26 @@
 import React from 'react'
+import { connect } from 'dva'
 
 import styles from './index.module.scss'
 
-const Page2 = ({ className }) => {
-  return (
-    <div className={`${className} ${styles['root']}`}>
-      Page2
-    </div>
-  )
+class Page2 extends React.Component {
+  componentDidMount() {
+    const { dispatch } = this.props
+    const res = dispatch({
+      type: 'proA_page2/test',
+    })
+    console.log(res)
+  }
+
+  render() {
+    const { className } = this.props
+
+    return (
+      <div className={`${className} ${styles['root']}`}>
+        Page2
+      </div>
+    )
+  }
 }
 
-export default Page2
+export default connect()(Page2)

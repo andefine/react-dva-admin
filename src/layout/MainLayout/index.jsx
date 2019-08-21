@@ -19,11 +19,6 @@ const renderProjectRoutes = (app, menus) => {
             projects.forEach(({ path, models, component }, proIndex) => {
               const key = `${titleIndex}-${proIndex}`
               resArr.push(
-                // <Route key={key} path={path} component={dynamic({
-                //   app,
-                //   models,
-                //   component,
-                // })}></Route>
                 <PrivateRoute key={key} path={path} component={dynamic({
                   app,
                   models,
@@ -37,14 +32,6 @@ const renderProjectRoutes = (app, menus) => {
         )
       }
     </Switch>
-
-    // <Switch>
-    //   <Route></Route>
-    //   <Route></Route>
-    //   <Route></Route>
-    //   <Route></Route>
-    //   <Route></Route>
-    // </Switch>
   )
 }
 

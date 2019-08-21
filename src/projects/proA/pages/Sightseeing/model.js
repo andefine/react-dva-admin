@@ -5,7 +5,7 @@ const timeout = (delay) => new Promise(resolve => {
 })
 
 export default {
-  namespace: 'proA/sightseeing',
+  namespace: 'proA_sightseeing',
 
   state: {
     sightseeingCars: [],
@@ -60,7 +60,7 @@ export default {
       yield call(sightseeingApi.deleteCar, id)
 
       const { page, pageSize } = yield select(state => {
-        const { 'proA/sightseeing': { sightseeingCarsParam } } = state
+        const { proA_sightseeing: { sightseeingCarsParam } } = state
         const { page, pageSize, total } = sightseeingCarsParam
         if ((page - 1) * pageSize === total - 1) {
           return { page: page - 1, pageSize }

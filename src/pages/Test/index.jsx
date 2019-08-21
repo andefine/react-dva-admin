@@ -1,9 +1,20 @@
 import React from 'react'
+import { connect } from 'dva'
 
-const Test = () => {
-  return (
-    <div className="">Test</div>
-  )
+class Test extends React.Component {
+  componentDidMount() {
+    const { dispatch } = this.props
+    const res = dispatch({
+      type: 'proA_page2/test'
+    })
+    console.log('Test', res)
+  }
+  
+  render() {
+    return (
+      <div className="">Test</div>
+    )
+  }
 }
 
-export default Test
+export default connect()(Test)
