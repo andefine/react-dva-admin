@@ -6,38 +6,62 @@ import styles from './index.module.scss'
 
 const { withRouter, Link } = router
 
-class SightseeingTable extends React.Component {
-  handlePaginationChanged = (page, pageSize) => {
+class CarsTable extends React.Component {
+  state = {
+    isLoading: false,
+  }
+
+  componentDidMount() {
+    this.getCars()
+  }
+
+  /**
+   * @param {number} page 默认 1 
+   * @param {number} pageSize 默认 3
+   */
+  getCars = async (page = 1, pageSize = 3) => {
     const { dispatch } = this.props
-    dispatch({
+
+    this.setState({ isLoading: true })
+    await dispatch({
       type: 'proA_sightseeing/loadSightseeingCars',
       payload: { page, pageSize }
+    })
+    this.setState({ isLoading: false })
+  }
+
+  handlePaginationChanged = (page, pageSize) => {
+    this.getCars(page, pageSize)
+  }
+
+  handleRepair = () => {}
+
+  handleDelete = (id) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'proA_sightseeing/deleteSightseeingCar',
+      payload: id,
     })
   }
 
   handleMoreItemsClick = (record, e) => {
     const { key } = e
     const { id } = record
-    const { dispatch } = this.props
 
     switch (key) {
       case 'repair':
-        
-        break
+        return this.handleRepair()
       case 'delete':
-        dispatch({
-          type: 'proA_sightseeing/deleteSightseeingCar',
-          payload: id,
-        })
-        break
+        return this.handleDelete(id)
     
       default:
-        break
+        return
     }
   }
   
   render() {
     const { className = '', sightseeingCars, sightseeingCarsParam } = this.props
+    const { isLoading } = this.state
     const { page, pageSize, total } = sightseeingCarsParam
 
     // const menu = (
@@ -193,22 +217,25 @@ class SightseeingTable extends React.Component {
     ]
     
     return (
-      <Table
-        className={`${className} ${styles['root']}`}
-        rowKey={item => item.id}
-        columns={columns}
-        dataSource={sightseeingCars}
-        pagination={{
-          current: page || 1,
-          total: total || 0,
-          pageSize: pageSize || 1,
-          showTotal: total => `共 ${total} 条`,
-          onChange: this.handlePaginationChanged,
-          showSizeChanger: true,
-          pageSizeOptions: ['3', '10', '20', '30', '40'],
-          onShowSizeChange: this.handlePaginationChanged,
-        }}
-      ></Table>
+      <React.Fragment>
+        <Table
+          className={`${className} ${styles['root']}`}
+          rowKey={item => item.id}
+          columns={columns}
+          dataSource={sightseeingCars}
+          loading={isLoading}
+          pagination={{
+            current: page || 1,
+            total: total || 0,
+            pageSize: pageSize || 1,
+            showTotal: total => `共 ${total} 条`,
+            onChange: this.handlePaginationChanged,
+            showSizeChanger: true,
+            pageSizeOptions: ['3', '10', '20', '30', '40'],
+            onShowSizeChange: this.handlePaginationChanged,
+          }}
+        ></Table>
+      </React.Fragment>
     )
   }
 }
@@ -225,4 +252,4 @@ const mapStateToProps = ({ proA_sightseeing: page1 }) => {
   return { sightseeingCars, sightseeingCarsParam, managesById }
 }
 
-export default withRouter(connect(mapStateToProps)(SightseeingTable))
+export default withRouter(connect(mapStateToProps)(CarsTable))

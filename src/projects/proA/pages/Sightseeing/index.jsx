@@ -2,32 +2,28 @@ import React from 'react'
 import { connect } from 'dva'
 import { Button, Modal, Form, Input, Select, DatePicker } from 'antd'
 
-import SightseeingTable from './SightseeingTable'
+import CarsTable from './CarsTable'
 
 import styles from './index.module.scss'
 
 class Sightseeing extends React.Component {
   state = {
     isCreateModalShow: false,
+    isCreateLoading: false,
   }
   
-  componentDidMount() {
-    const { dispatch } = this.props
+  // componentDidMount() {
+  //   const { dispatch } = this.props
 
-    dispatch({
-      type: 'proA_sightseeing/loadSightseeingCars',
-      // payload: { page: 2, pageSize: 10 }
-    })
-
-    // const res2 = dispatch({ type: 'app/test' })
-    // console.log(res2)
-  }
+  //   dispatch({
+  //     type: 'proA_sightseeing/loadSightseeingCars',
+  //   })
+  // }
 
   handleOk = () => {
     const { form, dispatch } = this.props
 
-    form.validateFields((err, values) => {
-      console.log(values)
+    form.validateFields(async (err, values) => {
       if (err) {
         return
       }
@@ -64,17 +60,22 @@ class Sightseeing extends React.Component {
         payload.newInsuranceTime = inputTime.format('YYYY-MM-DD')
       }
 
-      dispatch({
+      this.setState({ isCreateLoading: true })
+      await dispatch({
         type: 'proA_sightseeing/createSightseeingCar',
         payload,
       })
 
-      this.setState({ isCreateModalShow: false })
+      this.setState({
+        isCreateModalShow: false,
+        isCreateLoading: false,
+      })
     })
   }
   
   render() {
     const { className = '', form, manages } = this.props
+    const { isCreateLoading } = this.state
     const { getFieldDecorator } = form
 
     const formItemLayout = {
@@ -99,6 +100,7 @@ class Sightseeing extends React.Component {
           visible={this.state.isCreateModalShow}
           title="新增观光车"
           okText="保存"
+          confirmLoading={isCreateLoading}
           cancelText="取消"
           onOk={this.handleOk}
           onCancel={() => { this.setState({ isCreateModalShow: false }) }}
@@ -178,7 +180,7 @@ class Sightseeing extends React.Component {
           </Form>
         </Modal>
         
-        <SightseeingTable></SightseeingTable>
+        <CarsTable></CarsTable>
       </div>
     )
   }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Icon, Input, Button } from 'antd'
+import { Form, Icon, Input, Button, message } from 'antd'
 import { connect, router } from 'dva'
 
 import styles from './index.module.scss'
@@ -9,13 +9,25 @@ const { Redirect } = router
 class Login extends React.Component {
   
   handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        const { dispatch } = this.props
-        const { username, password } = values
-        dispatch({ type: 'app/login', username, password })
+    e.preventDefault()
+    this.props.form.validateFields(async (err, values) => {
+      if (err) {
+        return
       }
+
+      const { dispatch } = this.props
+      const { username, password } = values
+
+      const { errorCode, errMsg } = await dispatch({
+        type: 'app/login',
+        username,
+        password,
+      })
+
+      if (errorCode !== 200) {
+        return message.error(errMsg)
+      }
+      message.success(errMsg)
     })
   }
 
