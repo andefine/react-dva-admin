@@ -1,6 +1,8 @@
 // 开发环境和胜场环境的 baseURL, 至于测试，暂时还没用到
-const devBaseURL = 'https://test.qqmmsh.com/mxomsapi'
-const prodBaseURL = 'https://test.qqmmsh.com/mxomsapi'
+// const devBaseURL = 'https://test.qqmmsh.com/mxomsapi'
+// const prodBaseURL = 'https://test.qqmmsh.com/mxomsapi'
+const devBaseURL = ''
+const prodBaseURL = ''
 
 let finalBaseURL = ''
 if (process.env.NODE_ENV === 'development') {

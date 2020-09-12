@@ -1,31 +1,29 @@
-import { saga } from 'dva'
+import { delay } from 'dva/saga';
 
-const { delay } = saga
-
-const namespace = 'proA_page2'
+const namespace = 'proA_page2';
 
 const state = {
   name: 'page2',
   list: [],
-}
+};
 
 const reducers = {
   changeName(state, { payload: name }) {
-    return { ...state, name }
+    return { ...state, name };
   },
-}
+};
 
 const effects = {
   *test(action, { call, put }) {
-    yield call(delay, 2000)
+    yield call(delay, 2000);
     yield put({
       type: 'changeName',
-      payload: 'fhods'
-    })
+      payload: 'fhods',
+    });
   },
-}
+};
 
-const subscriptions = {}
+const subscriptions = {};
 
 export default {
   namespace,
@@ -33,4 +31,4 @@ export default {
   reducers,
   effects,
   subscriptions,
-}
+};
